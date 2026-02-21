@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
         
     - name: Cache Maven packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -48,7 +48,7 @@ jobs:
       if: success()
       
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         files: target/site/jacoco/jacoco.xml
       if: success()
@@ -57,7 +57,7 @@ jobs:
       run: mvn package
       
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ShooPhantom-${{ github.sha }}
         path: target/*.jar
@@ -90,7 +90,7 @@ jobs:
       continue-on-error: true
       
     - name: Upload Checkstyle results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: checkstyle-report
         path: target/checkstyle-result.xml
