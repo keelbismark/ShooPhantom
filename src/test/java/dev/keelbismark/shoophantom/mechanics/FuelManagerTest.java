@@ -68,7 +68,8 @@ public class FuelManagerTest {
             Ward result = fuelManager.addFuel(ward, 10);
             
             assertNotNull(result, "Result should not be null");
-            assertEquals(10, result.getFuel(), "Fuel should be added");
+            assertEquals(9, result.getFuel(), "9 fuel remain after 1 consumed to start burning");
+            assertTrue(result.getBurnEndTime() > 0, "Burn end time should be set");
         }
         
         @Test
