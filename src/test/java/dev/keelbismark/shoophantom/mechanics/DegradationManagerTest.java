@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -34,20 +36,33 @@ public class DegradationManagerTest {
         mockDatabase = mock(Database.class);
         mockMessages = mock(Messages.class);
         
-        when(mockPlugin.getDatabase()).thenReturn(mockDatabase);
-        when(mockPlugin.getMessages()).thenReturn(mockMessages);
-        when(mockPlugin.getConfigManager()).thenReturn(mock(dev.keelbismark.shoophantom.config.ConfigManager.class));
+        org.bukkit.Server mockServer = mock(org.bukkit.Server.class);
+        try {
+            java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
+            serverField.setAccessible(true);
+            serverField.set(null, mockServer);
+        } catch (Exception e) {
+            // Ignore mock setup errors
+        }
         
         dev.keelbismark.shoophantom.config.ConfigManager mockConfig = mock(dev.keelbismark.shoophantom.config.ConfigManager.class);
         lenient().when(mockPlugin.getConfigManager()).thenReturn(mockConfig);
+        lenient().when(mockPlugin.getDatabase()).thenReturn(mockDatabase);
+        lenient().when(mockPlugin.getMessages()).thenReturn(mockMessages);
+        lenient().when(mockPlugin.getLogger()).thenReturn(java.util.logging.Logger.getLogger("DegradationManagerTest"));
+        
         lenient().when(mockConfig.getTier2MinAliveBlocks()).thenReturn(9);
         lenient().when(mockConfig.getTier2WarnThreshold()).thenReturn(11);
+        lenient().when(mockConfig.getTier2AliveMaterials()).thenReturn(java.util.Set.of());
         lenient().when(mockConfig.getTier3PauseWhenNoPlayers()).thenReturn(true);
         lenient().when(mockConfig.getTier3PauseCheckRadius()).thenReturn(128);
         lenient().when(mockConfig.getTier3CycleHoursMin()).thenReturn(48);
         lenient().when(mockConfig.getTier3CycleHoursMax()).thenReturn(72);
         lenient().when(mockConfig.getTier3MastTop()).thenReturn(Material.END_ROD);
         lenient().when(mockConfig.getTier3MastDead()).thenReturn(Material.IRON_BARS);
+        lenient().when(mockConfig.getTier3MastGlass()).thenReturn(Material.TINTED_GLASS);
+        lenient().when(mockConfig.getTier3RadiusMin()).thenReturn(64);
+        lenient().when(mockConfig.getTier3RadiusMax()).thenReturn(128);
         
         lenient().when(mockMessages.degradationTier2Warn(anyInt())).thenReturn("§e⚠ Медное кольцо окисляется!");
         lenient().when(mockMessages.degradationTier2Fail()).thenReturn("§c⚠ Кольцо слишком окислено!");
@@ -91,7 +106,16 @@ public class DegradationManagerTest {
             Ward ward = new Ward(wardId, UUID.randomUUID(), "world", 0, 64, 0, 2, 10, 0, 0, 0);
             
             World mockWorld = mock(World.class);
-            when(Bukkit.getWorld("world")).thenReturn(mockWorld);
+            org.bukkit.Server mockServer = mock(org.bukkit.Server.class);
+            
+            lenient().when(mockServer.getWorld("world")).thenReturn(mockWorld);
+            try {
+                java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
+                serverField.setAccessible(true);
+                serverField.set(null, mockServer);
+            } catch (Exception e) {
+                // Ignore mock setup errors
+            }
             
             Ward result = degradationManager.checkTier2Degradation(ward);
             
@@ -105,7 +129,16 @@ public class DegradationManagerTest {
             Ward ward = new Ward(wardId, UUID.randomUUID(), "world", 0, 64, 0, 2, 10, 0, 0, 0);
             
             World mockWorld = mock(World.class);
-            when(Bukkit.getWorld("world")).thenReturn(mockWorld);
+            org.bukkit.Server mockServer = mock(org.bukkit.Server.class);
+            
+            lenient().when(mockServer.getWorld("world")).thenReturn(mockWorld);
+            try {
+                java.lang.reflect.Field serverField = org.bukkit.Bukkit.class.getDeclaredField("server");
+                serverField.setAccessible(true);
+                serverField.set(null, mockServer);
+            } catch (Exception e) {
+                // Ignore mock setup errors
+            }
             
             Ward result = degradationManager.checkTier2Degradation(ward);
             
@@ -167,7 +200,17 @@ public class DegradationManagerTest {
                               0, now - 1000, 0);
             
             World mockWorld = mock(World.class);
+            Location mockLocation = mock(Location.class);
+            Block mockBlock = mock(Block.class);
+            Player mockPlayer = mock(Player.class);
+            
             when(Bukkit.getWorld("world")).thenReturn(mockWorld);
+            when(mockWorld.getPlayers()).thenReturn(java.util.Collections.emptyList());
+            when(mockLocation.getWorld()).thenReturn(mockWorld);
+            
+            when(mockBlock.getType()).thenReturn(Material.IRON_BARS);
+            when(mockLocation.getBlock()).thenReturn(mockBlock);
+            when(mockLocation.add(anyDouble(), anyDouble(), anyDouble())).thenReturn(mockLocation);
             
             Ward result = degradationManager.checkTier3Degradation(ward);
             
