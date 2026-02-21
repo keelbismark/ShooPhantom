@@ -26,11 +26,13 @@ public class FuelManager {
             return null; // Хранилище полное
         }
 
+        // Проверяем, нужно ли запустить горение ПЕРЕД добавлением топлива
+        boolean wasInactive = !ward.isActive();
         int toAdd = Math.min(amount, maxFuel - currentFuel);
         Ward newWard = ward.withAddedFuel(toAdd);
 
         // Если оберег был неактивен, запускаем горение
-        if (!newWard.isActive()) {
+        if (wasInactive) {
             newWard = startBurning(newWard);
         }
 
