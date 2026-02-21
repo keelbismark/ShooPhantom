@@ -67,33 +67,39 @@ public class DegradationManager {
 
         long now = System.currentTimeMillis();
 
-        // Проверка паузы при отсутствии игроков
-        if (plugin.getConfigManager().getTier3PauseWhenNoPlayers()) {
-            World world = Bukkit.getWorld(ward.getWorld());
-            if (world != null) {
-                Location wardLoc = ward.getLocation(world);
-                int pauseRadius = plugin.getConfigManager().getTier3PauseCheckRadius();
-
-                boolean hasPlayers = false;
-                for (Player player : world.getPlayers()) {
-                    if (wardLoc.distance(player.getLocation()) <= pauseRadius) {
-                        hasPlayers = true;
-                        break;
-                    }
-                }
-
-                if (!hasPlayers) {
-                    return ward; // Пауза деградации
-                }
-            }
+        // Первичная настройка: установим время деградации если не установлено
+        if (ward.getNextDegradeTime() == 0) {
+            Ward newWard = setNextDegradeTime(ward);
+            plugin.getDatabase().saveWard(newWard);
+            ward = newWard;
         }
 
         // Проверка времени деградации
         if (ward.getNextDegradeTime() > now) {
+            // Еще не время - проверяем паузу при отсутствии игроков
+            if (plugin.getConfigManager().getTier3PauseWhenNoPlayers()) {
+                World world = Bukkit.getWorld(ward.getWorld());
+                if (world != null) {
+                    Location wardLoc = ward.getLocation(world);
+                    int pauseRadius = plugin.getConfigManager().getTier3PauseCheckRadius();
+
+                    boolean hasPlayers = false;
+                    for (Player player : world.getPlayers()) {
+                        if (wardLoc.distance(player.getLocation()) <= pauseRadius) {
+                            hasPlayers = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasPlayers) {
+                        return ward; // Пауза деградации
+                    }
+                }
+            }
             return ward; // Еще не время
         }
 
-        // Выполнение деградации
+        // Время наступило - выполняем деградацию без проверки паузы
         return performTier3Degradation(ward);
     }
     
@@ -178,8 +184,10 @@ public class DegradationManager {
         long cycleMin = plugin.getConfigManager().getTier3CycleHoursMin() * 3600000L;
         long cycleMax = plugin.getConfigManager().getTier3CycleHoursMax() * 3600000L;
 
-        long nextTime = System.currentTimeMillis() +
-                cycleMin + random.nextLong(cycleMax - cycleMin);
+        double randomFactor = random.nextDouble(); // 0.0 - 1.0
+        long cycleDuration = cycleMin + (long)(randomFactor * (cycleMax - cycleMin));
+
+        long nextTime = System.currentTimeMillis() + cycleDuration;
 
         return ward.withNextDegradeTime(nextTime);
     }
