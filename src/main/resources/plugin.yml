@@ -1,0 +1,36 @@
+name: ShooPhantom
+version: '2.0'
+main: dev.keelbismark.shoophantom.ShooPhantom
+api-version: '1.21'
+author: KeelBismark
+description: Защитные структуры от фантомов
+website: https://github.com/keelbismark/ShooPhantom
+
+commands:
+  shoo:
+    description: Основная команда плагина
+    usage: /<command> [info|fuel|admin]
+    aliases: [shoophantom, sp]
+
+permissions:
+  shoo.use:
+    description: Использование оберегов
+    default: true
+  shoo.create:
+    description: Создание оберегов
+    default: true
+  shoo.create.tier1:
+    description: Создание Tier 1
+    default: true
+  shoo.create.tier2:
+    description: Создание Tier 2
+    default: true
+  shoo.create.tier3:
+    description: Создание Tier 3
+    default: true
+  shoo.bypass:
+    description: Игнорирование лимитов
+    default: op
+  shoo.admin:
+    description: Админ-команды
+    default: op

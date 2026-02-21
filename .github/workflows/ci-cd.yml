@@ -1,0 +1,98 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Build with Maven
+      run: mvn clean compile
+      
+    - name: Run tests
+      run: mvn test
+      
+    - name: Generate test report
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Maven Tests
+        path: target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: false
+        
+    - name: Generate coverage report
+      run: |
+        mvn jacoco:report
+      if: success()
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: target/site/jacoco/jacoco.xml
+      if: success()
+      
+    - name: Package
+      run: mvn package
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ShooPhantom-${{ github.sha }}
+        path: target/*.jar
+        retention-days: 30
+        if-no-files-found: warn
+        
+    - name: Run Checkstyle
+      run: mvn checkstyle:check
+      continue-on-error: true
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    - name: Run Checkstyle
+      run: |
+        mvn checkstyle:checkstyle
+        if [ -f target/checkstyle-result.xml ]; then
+          echo "Checkstyle completed"
+        fi
+      continue-on-error: true
+      
+    - name: Upload Checkstyle results
+      uses: actions/upload-artifact@v3
+      with:
+        name: checkstyle-report
+        path: target/checkstyle-result.xml
+        if-no-files-found: ignore
+      if: always()

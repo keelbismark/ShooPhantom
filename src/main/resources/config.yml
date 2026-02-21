@@ -1,0 +1,282 @@
+# ═══════════════════════════════════════════════════════════
+#                    SHOO! PHANTOM CONFIG
+# ═══════════════════════════════════════════════════════════
+
+# Общие настройки
+general:
+  # Язык сообщений
+  language: ru
+  
+  # Максимум оберегов на игрока (0 = безлимит)
+  max-wards-per-player: 5
+  
+  # Защита горшка от взрывов
+  explosion-protection: true
+  
+  # Режим отладки
+  debug: false
+
+# ═══════════════════════════════════════════════════════════
+#                         TIERS
+# ═══════════════════════════════════════════════════════════
+
+tiers:
+  tier1:
+    radius: 48
+    fuel-minutes: 60
+    effects:
+      prevent-spawn: true
+      
+  tier2:
+    radius: 80
+    fuel-minutes: 45
+    effects:
+      prevent-spawn: true
+      cancel-target: true
+      
+  tier3:
+    radius-max: 128
+    radius-min: 80
+    fuel-minutes: 30
+    effects:
+      prevent-spawn: true
+      cancel-target: true
+      repel:
+        enabled: true
+        damage-max: 2.0
+        damage-min: 0.5
+        fire-ticks-max: 40
+        fire-ticks-min: 10
+        knockback-max: 0.6
+        knockback-min: 0.15
+        tick-interval: 40
+
+# ═══════════════════════════════════════════════════════════
+#                       STRUCTURE
+# ═══════════════════════════════════════════════════════════
+
+structure:
+  tier1:
+    above: LIGHTNING_ROD
+    below: CHISELED_TUFF_BRICKS
+    sides: COPPER_GRATE
+    corners: AMETHYST_BLOCK
+    
+  tier2:
+    ring-y-offset: -1
+    ring-size: 5
+    alive-materials:
+      - COPPER_BLOCK
+      - EXPOSED_COPPER
+      - WEATHERED_COPPER
+      - CUT_COPPER
+      - EXPOSED_CUT_COPPER
+      - WEATHERED_CUT_COPPER
+      - WAXED_COPPER_BLOCK
+      - WAXED_EXPOSED_COPPER
+      - WAXED_WEATHERED_COPPER
+      - WAXED_OXIDIZED_COPPER
+      - WAXED_CUT_COPPER
+      - WAXED_EXPOSED_CUT_COPPER
+      - WAXED_WEATHERED_CUT_COPPER
+      - WAXED_OXIDIZED_CUT_COPPER
+    dead-materials:
+      - OXIDIZED_COPPER
+      - OXIDIZED_CUT_COPPER
+    min-alive-blocks: 9
+    
+  tier3:
+    mast-positions:
+      - [2, 0, 2]
+      - [2, 0, -2]
+      - [-2, 0, 2]
+      - [-2, 0, -2]
+    mast-glass-height: 3
+    mast-glass: TINTED_GLASS
+    mast-top: END_ROD
+    mast-dead: IRON_BARS
+
+# ═══════════════════════════════════════════════════════════
+#                      DEGRADATION
+# ═══════════════════════════════════════════════════════════
+
+degradation:
+  enabled: true
+  
+  tier1:
+    wear: false
+    
+  tier2:
+    wear-type: VANILLA_OXIDATION
+    check-interval-minutes: 5
+    warn-threshold: 11
+    
+  tier3:
+    wear-type: TIMED_TRANSFORM
+    cycle-hours-min: 48
+    cycle-hours-max: 72
+    pause-when-no-players: true
+    pause-check-radius: 128
+
+# ═══════════════════════════════════════════════════════════
+#                         FUEL
+# ═══════════════════════════════════════════════════════════
+
+fuel:
+  item: PHANTOM_MEMBRANE
+  max-stack: 64
+  allow-hopper-input: true
+  block-hopper-output: true
+  drop-on-break: true
+
+# ═══════════════════════════════════════════════════════════
+#                      ACTIVATION
+# ═══════════════════════════════════════════════════════════
+
+activation:
+  require-sigil: true
+  sigil-base-item: ECHO_SHARD
+  
+  craft:
+    enabled: true
+    recipe:
+      shape:
+        - "PEP"
+        - "ENE"
+        - "PEP"
+      ingredients:
+        P: PHANTOM_MEMBRANE
+        E: ENDER_PEARL
+        N: NETHER_STAR
+
+# ═══════════════════════════════════════════════════════════
+#                    SHOO SIGIL (ПРЕДМЕТ)
+# ═══════════════════════════════════════════════════════════
+
+sigil:
+  # Дроп с фантомов
+  drop:
+    enabled: true
+    base-chance: 0.05           # 5% базовый шанс
+    looting-bonus: 0.01         # +1% за каждый уровень Looting
+    require-player-kill: true   # Только при убийстве игроком
+    
+  # Упрощенный крафт (доступнее основного)
+  simple-craft:
+    enabled: true
+    # Рецепт: 4 Мембраны + 2 Жемчужины + 1 Осколок Эха
+    recipe:
+      shape:
+        - "MPM"
+        - "PEP"
+        - "MPM"
+      ingredients:
+        M: PHANTOM_MEMBRANE
+        P: ENDER_PEARL
+        E: ECHO_SHARD
+
+# ═══════════════════════════════════════════════════════════
+#                       VISUALS
+# ═══════════════════════════════════════════════════════════
+
+visuals:
+  enabled: true
+  
+  tier1:
+    particle: END_ROD
+    interval-ticks: 100
+    count: 3
+    
+  tier2:
+    particle: WAX_ON
+    interval-ticks: 80
+    count: 8
+    
+  tier3:
+    particle: DUST_COLOR_TRANSITION
+    interval-ticks: 60
+    color-from: [128, 0, 255]
+    color-to: [0, 128, 255]
+    
+  degradation:
+    smoke-particle: SMOKE_LARGE
+    spark-particle: LAVA
+    sound: ENTITY_GENERIC_EXTINGUISH_FIRE
+
+# ═══════════════════════════════════════════════════════════
+#                      PHANTOMS
+# ═══════════════════════════════════════════════════════════
+
+phantoms:
+  blocked-spawn-reasons:
+    - NATURAL
+
+# ═══════════════════════════════════════════════════════════
+#                       DATABASE
+# ═══════════════════════════════════════════════════════════
+
+database:
+  type: SQLITE
+  
+  sqlite:
+    file: "wards.db"
+    
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "shoo_phantom"
+    username: "root"
+    password: ""
+    
+  auto-save-minutes: 5
+
+# ═══════════════════════════════════════════════════════════
+#                       MESSAGES
+# ═══════════════════════════════════════════════════════════
+
+messages:
+  prefix: "§5[Shoo!] §r"
+  
+  sigil:
+    dropped: "§5✨ Вы получили Shoo Sigil!"
+  
+  activation:
+    success: "§a✨ Оберег активирован! Tier: {tier}"
+    invalid-structure: "§c✖ Структура неполная!"
+    no-sigil: "§c✖ Нужен Shoo Sigil для активации!"
+    limit-reached: "§c✖ Достигнут лимит оберегов ({max})!"
+    
+  fuel:
+    added: "§a+{amount} мембран. Всего: {total}/64"
+    full: "§e⚠ Хранилище полное!"
+    empty: "§c⚠ Топливо закончилось! Оберег засыпает."
+    status: "§7Топливо: §f{fuel}/64 §7| Осталось: §f{time}"
+    
+  degradation:
+    tier2-warn: "§e⚠ Медное кольцо окисляется! ({alive}/16 блоков)"
+    tier2-fail: "§c⚠ Кольцо слишком окислено! Tier 2 отключён."
+    tier3-mast: "§c⚡ Излучатель перегорел! Мощность: {percent}% ({alive}/4)"
+    tier3-fail: "§4⚠ Все излучатели мертвы! Tier 3 отключён."
+    
+  repair:
+    tier2: "§a🔧 Кольцо восстановлено!"
+    tier3: "§a⚡ Излучатель восстановлен! Мощность: {percent}%"
+    
+  info:
+    header: "§5═══ Информация об обереге ═══"
+    owner: "§7Владелец: §f{owner}"
+    tier: "§7Tier: §f{tier}"
+    radius: "§7Радиус: §f{radius} блоков"
+    fuel: "§7Топливо: §f{fuel}/64"
+    time-left: "§7Осталось работы: §f{time}"
+    masts: "§7Мачты: §f{alive}/4 ({percent}%)"
+    ring: "§7Кольцо: §f{alive}/16 блоков"
+    
+  destroy:
+    success: "§c⚠ Оберег разрушен!"
+    
+  admin:
+    reload: "§aКонфигурация перезагружена!"
+    give-sigil: "§aВыдано {amount}× Shoo Sigil игроку {player}"
+    removed: "§cОберег удалён!"
+    not-looking: "§c✖ Смотрите на горшок-оберег!"
